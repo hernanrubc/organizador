@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<!-- saved from url=(0068)file:///C:/Users/herna/OneDrive/Escritorio/dashboard%20-%20Nano.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nano</title>
+<meta name="application-name" content="Nano">
+<meta name="theme-color" content="#111110">
+<link rel="manifest" id="pwa-manifest">
+<script>(function(){var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#1a1a19"/><text x="256" y="385" text-anchor="middle" font-family="Georgia,serif" font-size="360" font-weight="700" fill="#7ec87e">N</text></svg>';var b64=btoa(unescape(encodeURIComponent(svg)));var iconUrl='data:image/svg+xml;base64,'+b64;var manifest={name:'Nano',short_name:'Nano',display:'standalone',background_color:'#111110',theme_color:'#111110',start_url:location.href,icons:[{src:iconUrl,sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};var blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});document.getElementById('pwa-manifest').href=URL.createObjectURL(blob);})();</script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #111110; --surface: #1a1a19; --surface2: #222221; --surface3: #2a2a28;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
+  --text: #e5e3de; --muted: #7a7874; --accent: #c9a96e; --accent2: rgba(201,169,110,0.1);
+  --done-color: #4a7c59;
+  --p1: #c96e6e; --p1bg: rgba(201,110,110,0.12); --p1t: #e8a0a0;
+  --p2: #c9a96e; --p2bg: rgba(201,169,110,0.12); --p2t: #e0c898;
+  --p3: #6e9ec9; --p3bg: rgba(110,158,201,0.12); --p3t: #99c0dd;
+  --p4: #888784; --p4bg: rgba(136,135,132,0.1); --p4t: #aaa9a6;
+}
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
+::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.app { display: flex; height: 100vh; }
+
+/* SIDEBAR */
+.sidebar { width: 200px; min-width: 200px; background: var(--surface); border-right: 0.5px solid var(--border); display: flex; flex-direction: column; padding: 20px 0 12px; }
+.sidebar-header { padding: 0 16px 16px; border-bottom: 0.5px solid var(--border); }
+.day-name { font-size: 20px; font-weight: 500; color: var(--text); letter-spacing: -0.02em; }
+.day-date { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.progress-wrap { padding: 14px 16px; border-bottom: 0.5px solid var(--border); }
+.progress-nums { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 7px; }
+.pbar { height: 2px; background: var(--border2); border-radius: 2px; }
+.pfill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s; }
+.sidebar-section { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 14px 16px 6px; }
+.cat-list { padding: 0 8px; }
+.cat-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.15s; }
+.cat-item:hover, .cat-item.active { background: var(--surface2); color: var(--text); }
+.cat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.cat-count { margin-left: auto; font-size: 11px; color: var(--muted); }
+.sb-btn { margin: 4px 8px 0; display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 6px; font-size: 12px; color: var(--muted); cursor: pointer; background: none; border: none; font-family: inherit; width: calc(100% - 16px); transition: all 0.15s; text-align: left; }
+.sb-btn:hover { color: var(--text); background: var(--surface2); }
+.people-list { padding: 0 8px; max-height: 110px; overflow-y: auto; }
+.person-item { display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 6px; font-size: 12px; color: var(--muted); cursor: context-menu; }
+.person-item:hover { background: var(--surface2); color: var(--text); }
+.p-avatar { width: 18px; height: 18px; border-radius: 50%; background: var(--surface3); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; flex-shrink: 0; color: var(--accent); }
+.export-btn { margin: auto 8px 0; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 6px; font-size: 12px; color: var(--accent); cursor: pointer; background: var(--accent2); border: 0.5px solid rgba(201,169,110,0.2); font-family: inherit; width: calc(100% - 16px); transition: all 0.15s; }
+.export-btn:hover { background: rgba(201,169,110,0.18); }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+.main-header { padding: 18px 24px 12px; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.main-title { font-size: 15px; font-weight: 500; color: var(--text); }
+.filter-row { display: flex; gap: 4px; }
+.filter-btn { background: transparent; border: 0.5px solid var(--border); color: var(--muted); border-radius: 5px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.filter-btn:hover { color: var(--text); border-color: var(--border2); }
+.filter-btn.active { color: var(--accent); border-color: rgba(201,169,110,0.3); background: var(--accent2); }
+.task-area { flex: 1; overflow-y: auto; padding: 8px 16px 8px; }
+
+/* PRIORITY GROUPS */
+.priority-group { margin-bottom: 6px; }
+.priority-label { display: flex; align-items: center; gap: 7px; padding: 8px 8px 4px; font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); cursor: pointer; user-select: none; }
+.priority-label:hover { color: var(--text); }
+.p-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.p-dot.p1 { background: var(--p1); } .p-dot.p2 { background: var(--p2); } .p-dot.p3 { background: var(--p3); } .p-dot.p4 { background: var(--p4); }
+.group-toggle { margin-left: auto; font-size: 10px; transition: transform 0.2s; }
+.priority-group.collapsed .group-toggle { transform: rotate(-90deg); }
+.priority-group.collapsed .group-tasks { display: none; }
+
+/* TASKS */
+.task-item { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 7px; transition: background 0.12s; margin-bottom: 1px; cursor: default; }
+.task-item:hover { background: var(--surface2); }
+.task-item.done .task-text { text-decoration: line-through; color: var(--muted); }
+.task-check { width: 15px; height: 15px; min-width: 15px; border-radius: 50%; border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.18s; flex-shrink: 0; }
+.task-item.done .task-check { background: var(--done-color); border-color: var(--done-color); }
+.chk { display: none; } .task-item.done .chk { display: block; }
+.task-text { font-size: 13px; color: var(--text); line-height: 1.4; flex: 1; cursor: text; min-width: 0; }
+.task-text-input { font-size: 13px; color: var(--text); line-height: 1.4; flex: 1; background: transparent; border: none; outline: none; font-family: inherit; padding: 0; min-width: 0; width: 100%; }
+.task-sel { font-size: 11px; border-radius: 3px; cursor: pointer; flex-shrink: 0; border: none; outline: none; font-family: inherit; padding: 2px 5px; opacity: 0; transition: opacity 0.15s; -webkit-appearance: none; appearance: none; max-width: 76px; }
+.task-item:hover .task-sel { opacity: 1; }
+.task-sel option { background: #1a1a19; color: var(--text); }
+.task-delete { font-size: 13px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 0; opacity: 0; transition: opacity 0.15s, color 0.15s; flex-shrink: 0; line-height: 1; }
+.task-item:hover .task-delete { opacity: 1; }
+.task-delete:hover { color: var(--p1); }
+
+/* ADD ROW */
+.add-row { padding: 8px 16px 16px; }
+.add-wrap { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 8px; padding: 0 10px; transition: border 0.15s; }
+.add-wrap:focus-within { border-color: var(--border2); }
+.add-input { flex: 1; background: transparent; border: none; outline: none; font-family: inherit; font-size: 13px; color: var(--text); padding: 9px 0; min-width: 80px; }
+.add-input::placeholder { color: var(--muted); }
+.sep { width: 0.5px; height: 14px; background: var(--border2); flex-shrink: 0; }
+.add-sel { background: transparent; border: none; outline: none; font-family: inherit; font-size: 11px; color: var(--muted); cursor: pointer; padding: 2px 2px; flex-shrink: 0; }
+.add-sel option { background: #1a1a19; color: var(--text); }
+
+/* CTX MENU */
+.ctx-menu { position: fixed; background: var(--surface2); border: 0.5px solid var(--border2); border-radius: 8px; padding: 4px; z-index: 999; min-width: 150px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.ctx-item { padding: 6px 10px; font-size: 12px; color: var(--text); border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.ctx-item:hover { background: var(--surface3); }
+.ctx-sep { height: 0.5px; background: var(--border); margin: 3px 0; }
+.ctx-head { font-size: 10px; color: var(--muted); padding: 5px 10px 3px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* RIGHT */
+.right { width: 230px; min-width: 230px; background: var(--surface); border-left: 0.5px solid var(--border); display: flex; flex-direction: column; }
+.right-header { padding: 20px 16px 14px; border-bottom: 0.5px solid var(--border); font-size: 14px; font-weight: 500; color: var(--text); }
+.notes-area { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.note-lbl { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.note-box { background: transparent; border: none; resize: none; color: var(--text); font-size: 13px; font-family: inherit; line-height: 1.65; width: 100%; outline: none; }
+.note-box::placeholder { color: var(--muted); }
+.note-grow { flex: 1; display: flex; flex-direction: column; }
+.note-grow .note-box { flex: 1; min-height: 0; }
+.ndivider { height: 0.5px; background: var(--border); flex-shrink: 0; }
+.mood-section { padding: 10px 14px 14px; border-top: 0.5px solid var(--border); }
+.mood-lbl { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+.mood-row { display: flex; gap: 7px; }
+.mood-btn { background: transparent; border: 0.5px solid var(--border); border-radius: 50%; width: 30px; height: 30px; font-size: 14px; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; justify-content: center; }
+.mood-btn:hover, .mood-btn.active { border-color: var(--accent); background: var(--accent2); }
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="day-name" id="day-name">Martes</div>
+    <div class="day-date" id="day-date">19 mayo 2026</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-nums"><span>Progreso</span><span id="prog-txt">0 / 16</span></div>
+    <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+  </div>
+  <div class="sidebar-section">Categorías</div>
+  <div class="cat-list" id="cat-list"><div class="cat-item active"><span class="cat-dot" style="background:#555"></span><span>Todas</span><span class="cat-count">16</span></div><div class="cat-item"><span class="cat-dot" style="background:#c9a96e"></span><span style="flex:1">Trabajo</span><span class="cat-count">0</span></div><div class="cat-item"><span class="cat-dot" style="background:#6e9ec9"></span><span style="flex:1">Personal</span><span class="cat-count">0</span></div><div class="cat-item"><span class="cat-dot" style="background:#9b8fd6"></span><span style="flex:1">Marketing</span><span class="cat-count">6</span></div><div class="cat-item"><span class="cat-dot" style="background:#5dcaa5"></span><span style="flex:1">Web</span><span class="cat-count">7</span></div><div class="cat-item"><span class="cat-dot" style="background:#e09f66"></span><span style="flex:1">B2B</span><span class="cat-count">2</span></div><div class="cat-item"><span class="cat-dot" style="background:#a0c878"></span><span style="flex:1">Tienda</span><span class="cat-count">1</span></div></div>
+  <button class="sb-btn" onclick="addCategory()">+ Nueva categoría</button>
+  <div class="sidebar-section">Personas</div>
+  <div class="people-list" id="people-list"><div class="person-item"><div class="p-avatar">N</div><span>Nano</span></div><div class="person-item"><div class="p-avatar">A</div><span>Ali</span></div><div class="person-item"><div class="p-avatar">O</div><span>Omar</span></div></div>
+  <button class="sb-btn" onclick="addPerson()">+ Nueva persona</button>
+  <button class="export-btn" onclick="exportExcel()">↓ Exportar a Excel</button>
+</div>
+
+<div class="main">
+  <div class="main-header">
+    <div class="main-title" id="main-title">Todas las tareas</div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="setFilter(&#39;all&#39;,this)">Todas</button>
+      <button class="filter-btn" onclick="setFilter(&#39;pending&#39;,this)">Pendientes</button>
+      <button class="filter-btn" onclick="setFilter(&#39;done&#39;,this)">Completadas</button>
+    </div>
+  </div>
+  <div class="task-area" id="task-area"><div class="priority-group"><div class="priority-label" onclick="toggleGroup(this.parentElement)"><span class="p-dot p1"></span>Alta<span class="group-toggle">▾</span></div><div class="group-tasks"><div class="task-item" data-id="1">
+    <div class="task-check" onclick="toggleTask(1)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1,this)">Fotos pendientes Cotización 6413 - Mauricio Platoni</div>
+    <select class="task-sel" style="background:var(--p1bg);color:var(--p1t)" onchange="setPrio(1,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1" selected="">Alta</option><option value="2">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#5dcaa522;color:#5dcaa5" onchange="setCat(1,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367" selected="">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1)">✕</button></div><div class="task-item" data-id="1779216204784">
+    <div class="task-check" onclick="toggleTask(1779216204784)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216204784,this)">Enviar archivo para sacar fotos en falabella (debemos completar 35 SKU)</div>
+    <select class="task-sel" style="background:var(--p1bg);color:var(--p1t)" onchange="setPrio(1779216204784,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1" selected="">Alta</option><option value="2">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#9b8fd622;color:#9b8fd6" onchange="setCat(1779216204784,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490" selected="">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216204784,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216204784)">✕</button></div><div class="task-item" data-id="1779216248041">
+    <div class="task-check" onclick="toggleTask(1779216248041)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216248041,this)">Material publicitario TILKI MUJER</div>
+    <select class="task-sel" style="background:var(--p1bg);color:var(--p1t)" onchange="setPrio(1779216248041,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1" selected="">Alta</option><option value="2">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#9b8fd622;color:#9b8fd6" onchange="setCat(1779216248041,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490" selected="">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216248041,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216248041)">✕</button></div><div class="task-item" data-id="1779216288399">
+    <div class="task-check" onclick="toggleTask(1779216288399)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216288399,this)">Revisión y creación de Packs en BSALE de tarros de Pelotas - B2B</div>
+    <select class="task-sel" style="background:var(--p1bg);color:var(--p1t)" onchange="setPrio(1779216288399,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1" selected="">Alta</option><option value="2">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#e09f6622;color:#e09f66" onchange="setCat(1779216288399,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983" selected="">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216288399,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216288399)">✕</button></div><div class="task-item" data-id="1779216427276">
+    <div class="task-check" onclick="toggleTask(1779216427276)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216427276,this)">Revisar integracion de Boletas Sursports.cl - Tilki.cl - b2b</div>
+    <select class="task-sel" style="background:var(--p1bg);color:var(--p1t)" onchange="setPrio(1779216427276,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1" selected="">Alta</option><option value="2">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#5dcaa522;color:#5dcaa5" onchange="setCat(1779216427276,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367" selected="">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216427276,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216427276)">✕</button></div><div class="task-item" data-id="1779216442326">
+    <div class="task-check" onclick="toggleTask(1779216442326)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216442326,this)">Situación Lanyard de Regalo</div>
+    <select class="task-sel" style="background:var(--p1bg);color:var(--p1t)" onchange="setPrio(1779216442326,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1" selected="">Alta</option><option value="2">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#5dcaa522;color:#5dcaa5" onchange="setCat(1779216442326,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367" selected="">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216442326,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216442326)">✕</button></div><div class="task-item" data-id="1779216466390">
+    <div class="task-check" onclick="toggleTask(1779216466390)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216466390,this)">Tarjetas con un código de 15% y mensaje de Agradecimiento clientes web</div>
+    <select class="task-sel" style="background:var(--p1bg);color:var(--p1t)" onchange="setPrio(1779216466390,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1" selected="">Alta</option><option value="2">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#9b8fd622;color:#9b8fd6" onchange="setCat(1779216466390,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490" selected="">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216466390,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874" selected="">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216466390)">✕</button></div></div></div><div class="priority-group"><div class="priority-label" onclick="toggleGroup(this.parentElement)"><span class="p-dot p2"></span>Media<span class="group-toggle">▾</span></div><div class="group-tasks"><div class="task-item" data-id="2">
+    <div class="task-check" onclick="toggleTask(2)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(2,this)">Descuentos Cyber</div>
+    <select class="task-sel" style="background:var(--p2bg);color:var(--p2t)" onchange="setPrio(2,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1">Alta</option><option value="2" selected="">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#5dcaa522;color:#5dcaa5" onchange="setCat(2,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367" selected="">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(2,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(2)">✕</button></div><div class="task-item" data-id="3">
+    <div class="task-check" onclick="toggleTask(3)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(3,this)">Gráficas Cyber</div>
+    <select class="task-sel" style="background:var(--p2bg);color:var(--p2t)" onchange="setPrio(3,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1">Alta</option><option value="2" selected="">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#5dcaa522;color:#5dcaa5" onchange="setCat(3,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367" selected="">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(3,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874" selected="">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(3)">✕</button></div><div class="task-item" data-id="1779216171724">
+    <div class="task-check" onclick="toggleTask(1779216171724)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216171724,this)">Graficas horarios de Tiendas para Imprimir</div>
+    <select class="task-sel" style="background:var(--p2bg);color:var(--p2t)" onchange="setPrio(1779216171724,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1">Alta</option><option value="2" selected="">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#9b8fd622;color:#9b8fd6" onchange="setCat(1779216171724,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490" selected="">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216171724,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874" selected="">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216171724)">✕</button></div><div class="task-item" data-id="1779216314893">
+    <div class="task-check" onclick="toggleTask(1779216314893)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216314893,this)">Revisar colecciones y Tags en B2B - B2C - Menú</div>
+    <select class="task-sel" style="background:var(--p2bg);color:var(--p2t)" onchange="setPrio(1779216314893,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1">Alta</option><option value="2" selected="">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#5dcaa522;color:#5dcaa5" onchange="setCat(1779216314893,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367" selected="">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216314893,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216314893)">✕</button></div><div class="task-item" data-id="1779216336738">
+    <div class="task-check" onclick="toggleTask(1779216336738)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216336738,this)">Coordinar reunión entre ENVIA.COM y las BODEGAS para comenzar a operar con ellos al 100%</div>
+    <select class="task-sel" style="background:var(--p2bg);color:var(--p2t)" onchange="setPrio(1779216336738,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1">Alta</option><option value="2" selected="">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#5dcaa522;color:#5dcaa5" onchange="setCat(1779216336738,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367" selected="">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216336738,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216336738)">✕</button></div><div class="task-item" data-id="1779216355666">
+    <div class="task-check" onclick="toggleTask(1779216355666)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216355666,this)">Regla del 65% OFF en 4F y otros - B2B</div>
+    <select class="task-sel" style="background:var(--p2bg);color:var(--p2t)" onchange="setPrio(1779216355666,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1">Alta</option><option value="2" selected="">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#e09f6622;color:#e09f66" onchange="setCat(1779216355666,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983" selected="">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216355666,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216355666)">✕</button></div><div class="task-item" data-id="1779216675459">
+    <div class="task-check" onclick="toggleTask(1779216675459)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216675459,this)">Logo volumétrico Tilki</div>
+    <select class="task-sel" style="background:var(--p2bg);color:var(--p2t)" onchange="setPrio(1779216675459,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1">Alta</option><option value="2" selected="">Media</option><option value="3">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#9b8fd622;color:#9b8fd6" onchange="setCat(1779216675459,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490" selected="">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216675459,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216675459)">✕</button></div></div></div><div class="priority-group"><div class="priority-label" onclick="toggleGroup(this.parentElement)"><span class="p-dot p3"></span>Normal<span class="group-toggle">▾</span></div><div class="group-tasks"><div class="task-item" data-id="1779216397607">
+    <div class="task-check" onclick="toggleTask(1779216397607)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216397607,this)">Factura y Compra de Maniquíes para las Condes</div>
+    <select class="task-sel" style="background:var(--p3bg);color:var(--p3t)" onchange="setPrio(1779216397607,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1">Alta</option><option value="2">Media</option><option value="3" selected="">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#a0c87822;color:#a0c878" onchange="setCat(1779216397607,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625" selected="">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216397607,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216397607)">✕</button></div><div class="task-item" data-id="1779216660049">
+    <div class="task-check" onclick="toggleTask(1779216660049)">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <div class="task-text" onclick="editText(1779216660049,this)">Brandeo cancha de Prueba</div>
+    <select class="task-sel" style="background:var(--p3bg);color:var(--p3t)" onchange="setPrio(1779216660049,parseInt(this.value))" onclick="event.stopPropagation()"><option value="1">Alta</option><option value="2">Media</option><option value="3" selected="">Normal</option><option value="4">Baja</option></select>
+    <select class="task-sel" style="background:#9b8fd622;color:#9b8fd6" onchange="setCat(1779216660049,this.value)" onclick="event.stopPropagation()"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490" selected="">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+    <select class="task-sel" style="background:var(--accent2);color:var(--accent)" onchange="setOwner(1779216660049,this.value)" onclick="event.stopPropagation()"><option value="">— Nadie</option><option value="p_1779214823103" selected="">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    <button class="task-delete" onclick="deleteTask(1779216660049)">✕</button></div></div></div></div>
+  <div class="add-row">
+    <div class="add-wrap">
+      <input class="add-input" id="add-input" placeholder="+ Nueva tarea (Enter)">
+      <div class="sep"></div>
+      <select class="add-sel" id="add-prio">
+        <option value="1">🔴 Alta</option>
+        <option value="2" selected="">🟡 Media</option>
+        <option value="3">🔵 Normal</option>
+        <option value="4">⚪ Baja</option>
+      </select>
+      <div class="sep"></div>
+      <select class="add-sel" id="add-cat"><option value="work">Trabajo</option><option value="personal">Personal</option><option value="cat_1779216213490">Marketing</option><option value="cat_1779216216367">Web</option><option value="cat_1779216282983">B2B</option><option value="cat_1779216393625">Tienda</option></select>
+      <div class="sep"></div>
+      <select class="add-sel" id="add-owner"><option value="">Sin responsable</option><option value="p_1779214823103">Nano</option><option value="p_1779214829839">Ali</option><option value="p_1779214833874">Omar</option></select>
+    </div>
+  </div>
+</div>
+
+<div class="right">
+  <div class="right-header">Notas del día</div>
+  <div class="notes-area">
+    <div><div class="note-lbl">Intención</div><textarea class="note-box" id="note-int" rows="3" placeholder="¿Cuál es tu foco hoy?"></textarea></div>
+    <div class="ndivider"></div>
+    <div class="note-grow"><div class="note-lbl">Notas libres</div><textarea class="note-box" id="note-free" placeholder="Ideas, reflexiones..."></textarea></div>
+  </div>
+  <div class="mood-section">
+    <div class="mood-lbl">Energía</div>
+    <div class="mood-row">
+      <button class="mood-btn active" onclick="setMood(this)">😴</button>
+      <button class="mood-btn" onclick="setMood(this)">😐</button>
+      <button class="mood-btn" onclick="setMood(this)">🙂</button>
+      <button class="mood-btn" onclick="setMood(this)">⚡</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const DAYS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const MONTHS=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const now=new Date();
+document.getElementById('day-name').textContent=DAYS[now.getDay()];
+document.getElementById('day-date').textContent=`${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+
+const KEY='dash_v5_'+now.toISOString().slice(0,10);
+const KCAT='dash_cats_v5', KPPL='dash_ppl_v5';
+
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{};}catch{return {};}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));}
+function saveCats(){localStorage.setItem(KCAT,JSON.stringify(data.cats));}
+function savePpl(){localStorage.setItem(KPPL,JSON.stringify(data.people));}
+
+const PRIOS=[
+  {id:1,label:'Alta',  dot:'p1',color:'var(--p1)',bg:'var(--p1bg)',tc:'var(--p1t)'},
+  {id:2,label:'Media', dot:'p2',color:'var(--p2)',bg:'var(--p2bg)',tc:'var(--p2t)'},
+  {id:3,label:'Normal',dot:'p3',color:'var(--p3)',bg:'var(--p3bg)',tc:'var(--p3t)'},
+  {id:4,label:'Baja',  dot:'p4',color:'var(--p4)',bg:'var(--p4bg)',tc:'var(--p4t)'},
+];
+
+let data=load();
+if(!data.tasks) data.tasks=[{id:1,text:'Fotos pendientes Cotización 6413 - Mauricio Platoni',done:false,prio:1,cat:'cat_1779216216367',owner:'p_1779214823103'},{id:2,text:'Enviar archivo para sacar fotos en falabella (debemos completar 35 SKU)',done:false,prio:1,cat:'cat_1779216213490',owner:'p_1779214823103'},{id:3,text:'Material publicitario TILKI MUJER',done:false,prio:1,cat:'cat_1779216213490',owner:'p_1779214823103'},{id:4,text:'Revisión y creación de Packs en BSALE de tarros de Pelotas - B2B',done:false,prio:1,cat:'cat_1779216282983',owner:'p_1779214823103'},{id:5,text:'Revisar integracion de Boletas Sursports.cl - Tilki.cl - b2b',done:false,prio:1,cat:'cat_1779216216367',owner:'p_1779214823103'},{id:6,text:'Situación Lanyard de Regalo',done:false,prio:1,cat:'cat_1779216216367',owner:'p_1779214823103'},{id:7,text:'Tarjetas con un código de 15% y mensaje de Agradecimiento clientes web',done:false,prio:1,cat:'cat_1779216213490',owner:'p_1779214833874'},{id:8,text:'Descuentos Cyber',done:false,prio:2,cat:'cat_1779216216367',owner:'p_1779214823103'},{id:9,text:'Gráficas Cyber',done:false,prio:2,cat:'cat_1779216216367',owner:'p_1779214833874'},{id:10,text:'Graficas horarios de Tiendas para Imprimir',done:false,prio:2,cat:'cat_1779216213490',owner:'p_1779214833874'},{id:11,text:'Revisar colecciones y Tags en B2B - B2C - Menú',done:false,prio:2,cat:'cat_1779216216367',owner:'p_1779214823103'},{id:12,text:'Coordinar reunión entre ENVIA.COM y las BODEGAS para comenzar a operar con ellos al 100%',done:false,prio:2,cat:'cat_1779216216367',owner:'p_1779214823103'},{id:13,text:'Regla del 65% OFF en 4F y otros - B2B',done:false,prio:2,cat:'cat_1779216282983',owner:'p_1779214823103'},{id:14,text:'Logo volumétrico Tilki',done:false,prio:2,cat:'cat_1779216213490',owner:'p_1779214823103'},{id:15,text:'Factura y Compra de Maniquíes para las Condes',done:false,prio:3,cat:'cat_1779216393625',owner:'p_1779214823103'},{id:16,text:'Brandeo cancha de Prueba',done:false,prio:3,cat:'cat_1779216213490',owner:'p_1779214823103'}];
+data.tasks.forEach(t=>{if(!('owner' in t))t.owner='';});
+if(!data.cats) data.cats=[{id:'work',label:'Trabajo',color:'#c9a96e'},{id:'personal',label:'Personal',color:'#6e9ec9'},{id:'cat_1779216213490',label:'Marketing',color:'#9b8fd6'},{id:'cat_1779216216367',label:'Web',color:'#5dcaa5'},{id:'cat_1779216282983',label:'B2B',color:'#e09f66'},{id:'cat_1779216393625',label:'Tienda',color:'#a0c878'}];
+if(!data.people) data.people=[{id:'p_1779214823103',name:'Nano'},{id:'p_1779214829839',name:'Ali'},{id:'p_1779214833874',name:'Omar'}];
+if(!data.notes)data.notes={int:'',free:''};
+if(data.mood==null)data.mood=2;
+
+let activeFilter='all', activeCat='all';
+const getCat=id=>data.cats.find(c=>c.id===id)||{label:'—',color:'#555'};
+const getPerson=id=>data.people.find(p=>p.id===id)||null;
+const initials=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const escHtml=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function renderCats(){
+  const list=document.getElementById('cat-list');
+  list.innerHTML='';
+  const all=document.createElement('div');
+  all.className='cat-item'+(activeCat==='all'?' active':'');
+  all.innerHTML=`<span class="cat-dot" style="background:#555"></span><span>Todas</span><span class="cat-count">${data.tasks.length}</span>`;
+  all.onclick=()=>{activeCat='all';render();};
+  list.appendChild(all);
+  data.cats.forEach(cat=>{
+    const count=data.tasks.filter(t=>t.cat===cat.id).length;
+    const el=document.createElement('div');
+    el.className='cat-item'+(activeCat===cat.id?' active':'');
+    el.innerHTML=`<span class="cat-dot" style="background:${cat.color}"></span><span style="flex:1">${cat.label}</span><span class="cat-count">${count}</span>`;
+    el.onclick=()=>{activeCat=cat.id;render();};
+    el.oncontextmenu=e=>{e.preventDefault();showCatMenu(e,cat);};
+    list.appendChild(el);
+  });
+  const ac=document.getElementById('add-cat');
+  ac.innerHTML=data.cats.map(c=>`<option value="${c.id}">${c.label}</option>`).join('');
+}
+
+function renderPeople(){
+  const list=document.getElementById('people-list');
+  list.innerHTML='';
+  if(!data.people.length){list.innerHTML='<div style="padding:4px 16px;font-size:11px;color:var(--muted)">Sin personas aún</div>';}
+  else{data.people.forEach(p=>{const el=document.createElement('div');el.className='person-item';el.innerHTML=`<div class="p-avatar">${initials(p.name)}</div><span>${p.name}</span>`;el.oncontextmenu=e=>{e.preventDefault();showPersonMenu(e,p);};list.appendChild(el);});}
+  const ao=document.getElementById('add-owner');
+  ao.innerHTML='<option value="">Sin responsable</option>'+data.people.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+}
+
+function addCategory(){
+  const name=prompt('Nombre de la categoría:');
+  if(!name||!name.trim())return;
+  const cols=['#c96e6e','#6e9ec9','#9b8fd6','#5dcaa5','#e09f66','#a0c878'];
+  data.cats.push({id:'cat_'+Date.now(),label:name.trim(),color:cols[data.cats.length%cols.length]});
+  saveCats();render();
+}
+function addPerson(){
+  const name=prompt('Nombre de la persona:');
+  if(!name||!name.trim())return;
+  data.people.push({id:'p_'+Date.now(),name:name.trim()});
+  savePpl();render();
+}
+
+function showCatMenu(e,cat){
+  removeCtx();
+  const m=document.createElement('div');m.className='ctx-menu';m.id='ctx-menu';
+  m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';
+  m.innerHTML=`<div class="ctx-item" onclick="renameCat('${cat.id}')">Renombrar</div><div class="ctx-sep"></div><div class="ctx-item" style="color:var(--p1)" onclick="deleteCat('${cat.id}')">Eliminar</div>`;
+  document.body.appendChild(m);
+  setTimeout(()=>document.addEventListener('click',removeCtx,{once:true}),10);
+}
+function showPersonMenu(e,p){
+  removeCtx();
+  const m=document.createElement('div');m.className='ctx-menu';m.id='ctx-menu';
+  m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';
+  m.innerHTML=`<div class="ctx-item" onclick="renamePerson('${p.id}')">Renombrar</div><div class="ctx-sep"></div><div class="ctx-item" style="color:var(--p1)" onclick="deletePerson('${p.id}')">Eliminar</div>`;
+  document.body.appendChild(m);
+  setTimeout(()=>document.addEventListener('click',removeCtx,{once:true}),10);
+}
+function renameCat(id){removeCtx();const c=data.cats.find(x=>x.id===id);const n=prompt('Nuevo nombre:',c.label);if(n&&n.trim()){c.label=n.trim();saveCats();render();}}
+function deleteCat(id){removeCtx();if(!confirm('¿Eliminar categoría?'))return;data.cats=data.cats.filter(c=>c.id!==id);data.tasks.forEach(t=>{if(t.cat===id)t.cat=data.cats[0]?.id||'';});if(activeCat===id)activeCat='all';saveCats();save();render();}
+function renamePerson(id){removeCtx();const p=data.people.find(x=>x.id===id);const n=prompt('Nuevo nombre:',p.name);if(n&&n.trim()){p.name=n.trim();savePpl();render();}}
+function deletePerson(id){removeCtx();if(!confirm('¿Eliminar persona?'))return;data.people=data.people.filter(p=>p.id!==id);data.tasks.forEach(t=>{if(t.owner===id)t.owner='';});savePpl();save();render();}
+function removeCtx(){const m=document.getElementById('ctx-menu');if(m)m.remove();}
+
+function filteredTasks(){
+  return data.tasks.filter(t=>{
+    if(activeCat!=='all'&&t.cat!==activeCat)return false;
+    if(activeFilter==='pending'&&t.done)return false;
+    if(activeFilter==='done'&&!t.done)return false;
+    return true;
+  });
+}
+
+function renderTasks(){
+  const area=document.getElementById('task-area');
+  area.innerHTML='';
+  document.getElementById('main-title').textContent=activeCat==='all'?'Todas las tareas':getCat(activeCat).label;
+  const tasks=filteredTasks();
+  PRIOS.forEach(p=>{
+    const group=tasks.filter(t=>t.prio===p.id);
+    if(!group.length)return;
+    const sec=document.createElement('div');
+    sec.className='priority-group';
+    sec.innerHTML=`<div class="priority-label" onclick="toggleGroup(this.parentElement)"><span class="p-dot ${p.dot}"></span>${p.label}<span class="group-toggle">▾</span></div><div class="group-tasks"></div>`;
+    const gt=sec.querySelector('.group-tasks');
+    group.forEach(t=>gt.appendChild(makeTaskEl(t)));
+    area.appendChild(sec);
+  });
+  updateProgress();
+}
+
+function makeTaskEl(t){
+  const cat=getCat(t.cat);
+  const p=PRIOS.find(x=>x.id===t.prio)||PRIOS[1];
+  const person=getPerson(t.owner);
+  const el=document.createElement('div');
+  el.className='task-item'+(t.done?' done':'');
+  el.dataset.id=t.id;
+  const prioOpts=PRIOS.map(px=>`<option value="${px.id}"${px.id===t.prio?' selected':''}>${px.label}</option>`).join('');
+  const catOpts=data.cats.map(c=>`<option value="${c.id}"${c.id===t.cat?' selected':''}>${c.label}</option>`).join('');
+  const ownerOpts='<option value="">— Nadie</option>'+data.people.map(px=>`<option value="${px.id}"${px.id===t.owner?' selected':''}>${px.name}</option>`).join('');
+  const ownerBg=person?'var(--accent2)':'rgba(255,255,255,0.04)';
+  const ownerColor=person?'var(--accent)':'var(--muted)';
+  el.innerHTML=`
+    <div class="task-check" onclick="toggleTask(${t.id})">
+      <svg class="chk" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="task-text" onclick="editText(${t.id},this)">${escHtml(t.text)}</div>
+    <select class="task-sel" style="background:${p.bg};color:${p.tc}" onchange="setPrio(${t.id},parseInt(this.value))" onclick="event.stopPropagation()">${prioOpts}</select>
+    <select class="task-sel" style="background:${cat.color}22;color:${cat.color}" onchange="setCat(${t.id},this.value)" onclick="event.stopPropagation()">${catOpts}</select>
+    <select class="task-sel" style="background:${ownerBg};color:${ownerColor}" onchange="setOwner(${t.id},this.value)" onclick="event.stopPropagation()">${ownerOpts}</select>
+    <button class="task-delete" onclick="deleteTask(${t.id})">✕</button>`;
+  el.oncontextmenu=e=>{e.preventDefault();showTaskMenu(e,t);};
+  return el;
+}
+
+function toggleGroup(sec){sec.classList.toggle('collapsed');}
+function toggleTask(id){const t=data.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();render();}}
+function deleteTask(id){data.tasks=data.tasks.filter(x=>x.id!==id);save();render();}
+function setPrio(id,prio){removeCtx();const t=data.tasks.find(x=>x.id===id);if(t){t.prio=prio;save();render();}}
+function setCat(id,cat){removeCtx();const t=data.tasks.find(x=>x.id===id);if(t){t.cat=cat;save();render();}}
+function setOwner(id,owner){const t=data.tasks.find(x=>x.id===id);if(t){t.owner=owner;save();render();}}
+
+function editText(id,el){
+  const t=data.tasks.find(x=>x.id===id);
+  if(!t||t.done)return;
+  const inp=document.createElement('input');
+  inp.className='task-text-input';inp.value=t.text;
+  el.replaceWith(inp);inp.focus();inp.select();
+  function commit(){const v=inp.value.trim();if(v){t.text=v;save();}render();}
+  inp.addEventListener('blur',commit);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape')render();});
+}
+
+function showTaskMenu(e,t){
+  removeCtx();
+  const m=document.createElement('div');m.className='ctx-menu';m.id='ctx-menu';
+  m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';
+  const pI=PRIOS.map(p=>`<div class="ctx-item" onclick="setPrio(${t.id},${p.id})"><span class="p-dot ${p.dot}" style="background:${p.color}"></span>${p.label}${t.prio===p.id?' ✓':''}</div>`).join('');
+  const cI=data.cats.map(c=>`<div class="ctx-item" onclick="setCat(${t.id},'${c.id}')"><span class="cat-dot" style="background:${c.color}"></span>${c.label}${t.cat===c.id?' ✓':''}</div>`).join('');
+  const oI=[`<div class="ctx-item" onclick="setOwner(${t.id},'');removeCtx()">— Sin responsable${!t.owner?' ✓':''}</div>`,...data.people.map(p=>`<div class="ctx-item" onclick="setOwner(${t.id},'${p.id}');removeCtx()">${p.name}${t.owner===p.id?' ✓':''}</div>`)].join('');
+  m.innerHTML=`<div class="ctx-head">Prioridad</div>${pI}<div class="ctx-sep"></div><div class="ctx-head">Categoría</div>${cI}<div class="ctx-sep"></div><div class="ctx-head">Responsable</div>${oI}<div class="ctx-sep"></div><div class="ctx-item" style="color:var(--p1)" onclick="deleteTask(${t.id});removeCtx()">Eliminar</div>`;
+  document.body.appendChild(m);
+  setTimeout(()=>document.addEventListener('click',removeCtx,{once:true}),10);
+}
+
+function updateProgress(){
+  const v=filteredTasks();
+  const done=v.filter(t=>t.done).length,total=v.length;
+  document.getElementById('prog-txt').textContent=`${done} / ${total}`;
+  document.getElementById('pfill').style.width=total?`${Math.round(done/total*100)}%`:'0%';
+}
+
+document.getElementById('add-input').addEventListener('keydown',function(e){
+  if(e.key!=='Enter'||!this.value.trim())return;
+  const prio=parseInt(document.getElementById('add-prio').value);
+  const cat=document.getElementById('add-cat').value||(data.cats[0]?.id||'');
+  const owner=document.getElementById('add-owner').value||'';
+  data.tasks.push({id:Date.now(),text:this.value.trim(),done:false,prio,cat,owner});
+  this.value='';save();render();
+});
+
+function setFilter(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');render();
+}
+
+const ni=document.getElementById('note-int'),nf=document.getElementById('note-free');
+ni.value=data.notes.int;nf.value=data.notes.free;
+ni.addEventListener('input',()=>{data.notes.int=ni.value;save();});
+nf.addEventListener('input',()=>{data.notes.free=nf.value;save();});
+
+function setMood(btn){
+  document.querySelectorAll('.mood-btn').forEach((b,i)=>{b.classList.remove('active');if(b===btn)data.mood=i;});
+  btn.classList.add('active');save();
+}
+document.querySelectorAll('.mood-btn').forEach((b,i)=>{if(i===data.mood)b.classList.add('active');else b.classList.remove('active');});
+
+function exportExcel(){
+  const headers=['Tarea','Estado','Prioridad','Categoría','Responsable'];
+  const rows=data.tasks.map(t=>[
+    t.text,
+    t.done?'Completada':'Pendiente',
+    PRIOS.find(p=>p.id===t.prio)?.label||'',
+    getCat(t.cat)?.label||'',
+    getPerson(t.owner)?.name||''
+  ]);
+  const esc=v=>`"${String(v).replace(/"/g,'""')}"`;
+  const csv=[headers,...rows].map(r=>r.map(esc).join(',')).join('\r\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`tareas_${now.toISOString().slice(0,10)}.csv`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+function render(){renderCats();renderPeople();renderTasks();}
+render();
+</script>
+
+
+</body></html>
